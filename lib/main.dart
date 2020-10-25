@@ -1,17 +1,16 @@
 import 'package:boilerplate/globalStateManagement/language.dart';
 import 'package:boilerplate/globalStateManagement/requestsTest.dart';
 import 'package:boilerplate/globalStateManagement/themeManagement.dart';
+import 'package:boilerplate/globalStateManagement/increment.dart';
 import 'package:boilerplate/localStorage/localSTorageExample.dart';
 import 'package:boilerplate/ui/themes.dart';
+import 'package:boilerplate/utils/routes.dart';
 import 'package:boilerplate/utils/MyLocalizations.dart';
 import 'package:boilerplate/utils/MyLocalizationsDelegate.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-
-import './utils/routes.dart';
-
 import 'package:flutter/material.dart';
-import './globalStateManagement/increment.dart';
 
 void main() {
   runApp(MultiProvider(providers: [

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../ui/themes.dart';
+import 'package:boilerplate/ui/themes.dart';
 
 class ThemeManagement with ChangeNotifier {
   ThemeData _currentTheme = mainTheme;
