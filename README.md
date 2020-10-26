@@ -1,4 +1,7 @@
-# boilerplate
+<meta name="state management" content="Riverpod"/>
+<meta name="author" content="Regis Mazur, regis_mazur@hotmail.com"/>
+
+# Flutter boilerplate
 
 A Flutter boilerplate which includes :
  - Routing
