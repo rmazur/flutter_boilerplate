@@ -7,6 +7,8 @@ A Flutter boilerplate which includes :
  - REST call
  - GlobalStateManagement
  - Local Storage
+
+ Note: This boilerplate is using Riverpod for global state management
  
 ## Getting Started
 

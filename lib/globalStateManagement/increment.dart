@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Increment with ChangeNotifier {
+/* class Increment with ChangeNotifier {
   int _count = 0;
   int get count => _count;
 
@@ -8,4 +8,6 @@ class Increment with ChangeNotifier {
     _count++;
     notifyListeners();
   }
-}
+} */
+
+final increment = StateProvider<int>((ref) => 0);

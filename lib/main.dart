@@ -2,30 +2,28 @@ import 'package:boilerplate/globalStateManagement/language.dart';
 import 'package:boilerplate/globalStateManagement/requestsTest.dart';
 import 'package:boilerplate/globalStateManagement/themeManagement.dart';
 import 'package:boilerplate/globalStateManagement/increment.dart';
-import 'package:boilerplate/localStorage/localSTorageExample.dart';
+import 'package:boilerplate/globalStateManagement/localStorage.dart';
 import 'package:boilerplate/ui/themes.dart';
 import 'package:boilerplate/utils/routes.dart';
 import 'package:boilerplate/utils/MyLocalizations.dart';
 import 'package:boilerplate/utils/MyLocalizationsDelegate.dart';
-
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => Increment()),
-    ChangeNotifierProvider(create: (_) => ThemeManagement()),
-    ChangeNotifierProvider(create: (_) => LanguageProvider()),
-    ChangeNotifierProvider(create: (_) => RequestsTest()),
-  ], child: MyApp()));
+  runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final changeLanguageNotifier = useProvider(changeLanguageNotifProv);
+    final changeThemeNotifier = useProvider(changeThemeNotifProv);
+
     return MaterialApp(
-      locale: context.watch<LanguageProvider>().language,
+      locale: changeLanguageNotifier.language,
       supportedLocales: [
         const Locale('en', ''),
         const Locale('es', ''),
@@ -47,34 +45,29 @@ class MyApp extends StatelessWidget {
       },
       title: 'Flutter Boilerplate Demo',
       routes: Routes.routes,
-      theme: context.watch<ThemeManagement>().currentTheme,
+      theme: changeThemeNotifier.currentTheme,
       home: MyHomePage(title: 'Flutter Boilerplate'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends HookWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
   final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  LocalStorageExample localStorageEx = LocalStorageExample();
-  String localStorageAuthor = '';
   @override
   Widget build(BuildContext context) {
-    String author = context.watch<RequestsTest>().data['slideshow'] != null
-        ? context.watch<RequestsTest>().data['slideshow']['author']
+    final incrementState = useProvider(increment);
+    final changeLanguageNotifier = useProvider(changeLanguageNotifProv);
+    final changeThemeNotifier = useProvider(changeThemeNotifProv);
+    final requestNotifier = useProvider(requestNotifProv);
+    final localStoreNotifier = useProvider(localStoreNotifProv);
+
+    String author = requestNotifier.data['slideshow'] != null
+        ? requestNotifier.data['slideshow']['author']
         : 'empty';
-    var incrementValue = context.watch<Increment>().count;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -85,49 +78,53 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: Text('Login'),
             ),
+            SizedBox(height: 20),
             RaisedButton(
               onPressed: () {
-                context.read<Increment>().increment();
+                incrementState.state++;
               },
-              child: Text('Increment Using Provider'),
+              child: Text('Increment Using StateProvider (Riverpod)'),
             ),
-            Text('Value:$incrementValue',
+            Text('Value:' + incrementState.state.toString(),
                 style: secondaryTheme.textTheme.headline2),
-            RaisedButton(
-              onPressed: () {
-                context.read<ThemeManagement>().toggleTheme();
-              },
-              child: Text('Toggle Theme'),
-            ),
+            SizedBox(height: 20),
             Text(MyLocalizations.of(context).trans("hello_world")),
             RaisedButton(
               onPressed: () {
-                context.read<LanguageProvider>().changeLanguage();
+                changeLanguageNotifier.changeLanguage();
               },
               child: Text('Toggle Language'),
             ),
+            SizedBox(height: 20),
             RaisedButton(
               onPressed: () {
-                context.read<RequestsTest>().fetchData();
+                changeThemeNotifier.toggleTheme();
+              },
+              child: Text('Toggle Theme'),
+            ),
+            SizedBox(height: 20),
+            RaisedButton(
+              onPressed: () {
+                requestNotifier.fetchData();
               },
               child: Text('Make Request'),
             ),
             Text('$author'),
+            SizedBox(height: 20),
             RaisedButton(
               onPressed: () {
-                setState(() {
-                  localStorageAuthor = localStorageEx.getAuthor();
-                });
+                localStoreNotifier.getlocalAuthor();
               },
               child: Text('get Local'),
             ),
             RaisedButton(
               onPressed: () {
-                localStorageEx.setAuthor('test3');
+                localStoreNotifier.setlocalAuthor('Bob');
               },
               child: Text('SET Local'),
             ),
-            Text('Local Storage text:$localStorageAuthor')
+            Text(
+                'Local Storage text: ' + localStoreNotifier.localStorageAuthor),
           ],
         ),
       ),
